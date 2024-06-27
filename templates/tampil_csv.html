@@ -6,15 +6,25 @@
     <title>Document</title>
 </head>
 <body>
-    <table class="display table responsive" style="width: 70%;">
-        <h1>
-            {% for tbl in table %}
-                <h2>{{title[loop.index]}}</h2>
-                {{tbl | safe }}
-            {% endfor %}
-        </h1>
-    </table>
+  <form method="post" action="">
+    <table style="margin-left: auto; margin-right: auto;">
+                  
+        <tr>
+          <th>authorDisplayName</th>
+          <th>textDisplay</th>
+          <th>likeCount</th>
+        </tr>
+        {% for di, dt in table %}
+        <tr>
+          <td>{{dt['authorDisplayName']}}</td>
+          <td>{{dt['textDisplay'] | truncate(45)}}</td>
+          <td>{{dt['likeCount']}}</td>
+        </tr>
+        {% endfor %}
+      </table> 
    
-    <button>tmbol melakukan NLP</button>
+    
+        <button>Preprocessing data</button>
+    </form>
 </body>
 </html>
