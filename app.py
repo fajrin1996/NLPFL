@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, send_from_directory, abort
 import os
 import pandas as pd
 
@@ -8,6 +8,7 @@ from loop_csv import remove_agk, remove_emoj, remove_html, remove_punct, remove_
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/upload'
+app.config['DOWNLOAD_FOLDER'] = 'static/download'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
 # Pastikan folder uploads ada
@@ -18,6 +19,16 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def index():
     return render_template('index.html')
 
+@app.route('/tampil-hasil/<fileku>')
+def hasil(fileku):
+
+    # try:
+    #     return send_from_directory(app.config["DOWNLOAD_FOLDER"], path=fileku, as_attachment=True)
+
+    # except FileNotFoundError:
+    #         abort((404))
+    read = pd.read_csv('static/download/'+fileku)
+    return render_template('cleansing-data.html', red = read.iterrows())
 
 @app.route('/file-csv/<nama>', methods=['GET', 'POST'])
 def tampil_csv(nama):
@@ -34,15 +45,10 @@ def tampil_csv(nama):
         df['tokenz_and_caseFold'] = df['cleansing'].apply(lambda x: x.lower().split())
         df['remove_stopwords'] = df['tokenz_and_caseFold'].apply(lambda x: remove_stopwords(x))
         count += 1
-        # filebaru = 
-        return redirect(url_for('hasil',fileku=df.to_csv('df_baru'+str(count)+'.csv', index=False)))
+        filebaru = df.to_csv('static/download/df_baru'+str(count)+'.csv', index=False)
+        return redirect(url_for('hasil', fileku='df_baru'+str(count)+'.csv')) #send_from_directory('static/download', path=filebaru, as_attachment=True, mimetype='csv') #
     else:
         return render_template('tampil_csv.html',table = df.iterrows())
-
-@app.route('/tampil-hasil/<fileku>')
-def hasil(fileku):
-    read = pd.read_csv(fileku)
-    return render_template('cleansing-data.html', red = read.iterrows())
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
