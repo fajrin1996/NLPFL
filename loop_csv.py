@@ -3,9 +3,12 @@ import re
 import string
 from nltk.corpus import stopwords
 import nltk
+from googletrans import Translator
 
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 nltk.download('stopwords')
 stop_words = stopwords.words('indonesian')
+# stop_words.extend('sm', 'yg', 'otake')
 
 # data = pd.read_csv('/home/rins/web-development/NLP/static/upload/youtube-comments.csv')
 
@@ -42,3 +45,14 @@ def remove_punct(tweets):
 
 def remove_stopwords(text):
   return [word for word in text if word not in stop_words]
+
+def stemer_word(text):
+        factory = StemmerFactory()
+        stemmer = factory.create_stemmer()
+       
+        return [stemmer.stem(word) for word in text]
+
+def translate_tweet(tweet, target_language='en'):
+       translator = Translator()
+       translation = translator.translate(tweet, dest=target_language)
+       return translation.text

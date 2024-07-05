@@ -11,15 +11,20 @@
           <tr>
             <th>cleansing</th>
             <th>tokenz_and_caseFold</th>
+            <th>stemmer</th>
             <th>likeCount</th>
           </tr>
           {% for di, dt in red %}
           <tr>
             <td>{{dt['cleansing']}}</td>
             <td>{{dt['tokenz_and_caseFold'] | truncate(45)}}</td>
+            <td>{{dt['stemmer'] | truncate(45) }}</td>
             <td>{{dt['likeCount']}}</td>
           </tr>
           {% endfor %}
     </table> 
+    <form action="" method="post">
+      <button>analis sentiment</button>
+    </form>
 </body>
 </html>
