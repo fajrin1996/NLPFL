@@ -4,6 +4,7 @@ import string
 from nltk.corpus import stopwords
 import nltk
 from googletrans import Translator
+from deep_translator import MyMemoryTranslator
 
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 nltk.download('stopwords')
@@ -53,6 +54,6 @@ def stemer_word(text):
         return [stemmer.stem(word) for word in text]
 
 def translate_tweet(tweet, target_language='en'):
-       translator = Translator()
-       translation = translator.translate(tweet, dest=target_language)
-       return translation.text
+       translator = MyMemoryTranslator(source='id-ID', target='en-GB').translate(tweet, return_all=False)
+       
+       return translator

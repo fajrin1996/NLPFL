@@ -75,7 +75,7 @@ def tampil_csv(nama):
         df['cleansing'] = df['cleansing'].apply(lambda x: remove_punct(x))
         df['tokenz_and_caseFold'] = df['cleansing'].apply(lambda x: x.lower().split())
         df['remove_stopwords'] = df['tokenz_and_caseFold'].apply(lambda x: remove_stopwords(x))
-        df['stemmer'] = df['tokenz_and_caseFold'].apply(lambda x: stemer_word(x))
+        df['translate'] = df['cleansing'].apply(lambda x: translate_tweet(x))
         count += 1
         filebaru = df.to_csv('static/download/df_baru'+str(count)+'.csv', index=False)
         return redirect(url_for('hasil', fileku='df_baru'+str(count)+'.csv')) #send_from_directory('static/download', path=filebaru, as_attachment=True, mimetype='csv') #

@@ -17,8 +17,8 @@
           {% for di, dt in red %}
           <tr>
             <td>{{dt['cleansing']}}</td>
-            <td>{{dt['tokenz_and_caseFold'] | truncate(45)}}</td>
-            <td>{{dt['stemmer'] | truncate(45) }}</td>
+            <td>{{dt['tokenz_and_caseFold']}}</td>
+            <td>{{dt['translate'] }}</td>
             <td>{{dt['likeCount']}}</td>
           </tr>
           {% endfor %}
