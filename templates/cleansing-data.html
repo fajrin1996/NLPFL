@@ -12,14 +12,16 @@
             <th>cleansing</th>
             <th>tokenz_and_caseFold</th>
             <th>stemmer</th>
-            <th>likeCount</th>
+            <th>normalisasi</th>
+            
           </tr>
           {% for di, dt in red %}
           <tr>
             <td>{{dt['cleansing']}}</td>
             <td>{{dt['tokenz_and_caseFold']}}</td>
-            <td>{{dt['translate'] }}</td>
-            <td>{{dt['likeCount']}}</td>
+            <td>{{dt['stemmer'] | truncate(50) }}</td>
+            <td>{{dt['normalisasi'] }}</td>
+            
           </tr>
           {% endfor %}
     </table> 

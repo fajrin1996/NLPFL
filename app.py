@@ -3,10 +3,10 @@ import os
 import pandas as pd
 import re
 from googletrans import Translator
-
+from normalisasi import correction
 import string
 from loop_csv import remove_agk, remove_emoj, remove_html, remove_punct, remove_url, \
-    remove_stopwords, stemer_word, translate_tweet
+    remove_stopwords, stemer_word, normalizedterm, detemine
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 
@@ -27,9 +27,9 @@ labels = []
 scores = []
 @app.route('/tampil-hasil/<fileku>', methods=['GET', 'POST'])
 def hasil(fileku):
-    nltk.download('punkt')
-    nltk.download('vader_lexicon')
-    dat = SentimentIntensityAnalyzer()
+    # nltk.download('punkt')
+    # nltk.download('vader_lexicon')
+    # dat = SentimentIntensityAnalyzer()
 
     # try:
     #     return send_from_directory(app.config["DOWNLOAD_FOLDER"], path=fileku, as_attachment=True)
@@ -38,32 +38,16 @@ def hasil(fileku):
     #         abort((404))
     read = pd.read_csv('static/download/'+fileku)
     if request.method == "POST":
-        for text in read['stemmer']:
-            sentiment_score = dat.polarity_scores(text)
-            compound_score = sentiment_score['compound']
-            scores.append(compound_score)
-
-            if compound_score > 0:
-                label = 'positif'
-            elif compound_score < 0:
-                label = 'negatif'
-            else:
-                label = 'netral'
-            
-            labels.append(label)
-        read['sentiment_score']  = scores
-        read['sentiment'] = labels
-        dt = ['textDisplay', 'sentiment_score', 'sentiment']
+        read['sentiment']=read['normalisasi'].apply(detemine)
+        dt = ['textDisplay', 'sentiment']
         dt = read[dt]
-        labeling = dt.to_csv('static/hasil_labeling/hasil_sentiment.csv', columns= ['textDisplay', 'sentiment_score', 'sentiment'])
+        labeling = dt.to_csv('static/hasil_labeling/hasil_sentiment.csv', columns= ['textDisplay', 'sentiment'])
         return send_from_directory('static/hasil_labeling', path='hasil_sentiment.csv', as_attachment=True, mimetype='csv')
     return render_template('cleansing-data.html', red = read.iterrows())
 
 @app.route('/file-csv/<nama>', methods=['GET', 'POST'])
 def tampil_csv(nama):
     count = 0
-    translate_data = []
-    translator = Translator()
     df = pd.read_csv('static/upload/'+nama)
     if request.method == 'POST':
         df = pd.DataFrame(df['textDisplay'])
@@ -75,7 +59,8 @@ def tampil_csv(nama):
         df['cleansing'] = df['cleansing'].apply(lambda x: remove_punct(x))
         df['tokenz_and_caseFold'] = df['cleansing'].apply(lambda x: x.lower().split())
         df['remove_stopwords'] = df['tokenz_and_caseFold'].apply(lambda x: remove_stopwords(x))
-        df['translate'] = df['cleansing'].apply(lambda x: translate_tweet(x))
+        df['stemmer'] = df['remove_stopwords'].apply(lambda x: stemer_word(x))
+        df['normalisasi'] = df['stemmer'].apply(normalizedterm)
         count += 1
         filebaru = df.to_csv('static/download/df_baru'+str(count)+'.csv', index=False)
         return redirect(url_for('hasil', fileku='df_baru'+str(count)+'.csv')) #send_from_directory('static/download', path=filebaru, as_attachment=True, mimetype='csv') #
